@@ -63,7 +63,7 @@ module BrocadeREST
 		def setEditableKeys(uri, json)
 
 			# Editable keys not available prior to REST Version 3.5 (vTM 10.1)
-			if @restVersion < 3.5
+			if Float(@restVersion) < 3.5
 				return json
 			end
 
