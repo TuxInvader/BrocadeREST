@@ -24,7 +24,7 @@ module BrocadeREST
 												 	compareFunc: "hashPrivateKey", writeFunc: "stripHashValue" }
 
 			@quirkHash["monitors"] = { writeFunc: "setEditableKeys" }
-			@quirkHash["pools"] = { readFunc: "nodePriorities" }
+			@quirkHash["pools"] = { readFunc: "nodePriorities", compareFunc: "nodeAutoScaling" }
 
 			# SSL Client and Server keys need the same additional processing
 			@quirkHash["ssl_client_keys"] = @quirkHash["ssl_server_keys"]
@@ -122,6 +122,17 @@ module BrocadeREST
 				return json
 			end
 		end
+
+		# Don't check the nodes array if AutoScaling is in use.
+		def nodeAutoScaling(uri, json)
+			hash = JSON.parse(json)
+			if hash["properties"]["dns_autoscale"]["enabled"] == true or
+			   hash["properties"]["auto_scaling"]["enabled"] == true
+					hash["properties"]["basic"].delete("nodes_table")
+			end
+			return hash
+		end
+
 	end
 end
 
